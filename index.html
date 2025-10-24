@@ -8,114 +8,62 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script>
-        // Touch rotation component for interactive objects
-        AFRAME.registerComponent('touch-rotate', {
+        // Continuous rotation component
+        AFRAME.registerComponent('auto-rotate', {
+            schema: {
+                speed: { type: 'number', default: 45 }
+            },
+            tick: function (_time, delta) {
+                const rotation = this.el.getAttribute('rotation');
+                rotation.y += (delta / 1000) * this.data.speed;
+                this.el.setAttribute('rotation', rotation);
+            }
+        });
+
+        // Keep entity aligned with marker while visible, retain last pose when lost
+        AFRAME.registerComponent('marker-follow', {
+            schema: {
+                markerId: { type: 'string' },
+                anchorId: { type: 'string', default: '' }
+            },
             init: function () {
-                this.isDragging = false;
-                this.lastX = 0;
-                this.lastY = 0;
-                this.rotationSpeed = 0.5;
-                this.originalColor = this.el.getAttribute('color') || 'red';
+                this.markerEl = document.getElementById(this.data.markerId);
+                this.anchorEl = this.data.anchorId ? document.getElementById(this.data.anchorId) : null;
+                this.markerVisible = false;
+                this.tmpMatrix = new THREE.Matrix4();
 
-                // Touch start event
-                this.el.addEventListener('touchstart', (e) => {
-                    this.isDragging = true;
-                    this.lastX = e.touches[0].clientX;
-                    this.lastY = e.touches[0].clientY;
-
-                    // Visual feedback - change color when touched
-                    this.el.setAttribute('color', '#ff4444');
-                    
-                    // Prevent default to avoid scrolling
-                    e.preventDefault();
-                });
-
-                // Touch move event
-                this.el.addEventListener('touchmove', (e) => {
-                    if (!this.isDragging) return;
-
-                    e.preventDefault();
-
-                    const currentX = e.touches[0].clientX;
-                    const currentY = e.touches[0].clientY;
-
-                    const deltaX = currentX - this.lastX;
-                    const deltaY = currentY - this.lastY;
-
-                    // Get current rotation
-                    const currentRotation = this.el.getAttribute('rotation');
-                    
-                    // Rotate based on horizontal movement (Y-axis rotation)
-                    const rotationY = currentRotation.y + (deltaX * this.rotationSpeed);
-
-                    // Rotate based on vertical movement (X-axis rotation)
-                    const rotationX = currentRotation.x - (deltaY * this.rotationSpeed);
-
-                    this.el.setAttribute('rotation', {
-                        x: rotationX,
-                        y: rotationY,
-                        z: currentRotation.z
+                if (this.markerEl) {
+                    this.markerEl.addEventListener('markerFound', () => {
+                        this.markerVisible = true;
+                        this.el.setAttribute('visible', true);
                     });
-
-                    this.lastX = currentX;
-                    this.lastY = currentY;
-                });
-
-                // Touch end event
-                this.el.addEventListener('touchend', () => {
-                    this.isDragging = false;
-                    // Reset color when touch ends
-                    this.el.setAttribute('color', this.originalColor);
-                });
-                
-                // Mouse events for desktop testing
-                this.el.addEventListener('mousedown', (e) => {
-                    this.isDragging = true;
-                    this.lastX = e.clientX;
-                    this.lastY = e.clientY;
-                    this.el.setAttribute('color', '#ff4444');
-                    e.preventDefault();
-                });
-
-                this.el.addEventListener('mousemove', (e) => {
-                    if (!this.isDragging) return;
-
-                    e.preventDefault();
-
-                    const currentX = e.clientX;
-                    const currentY = e.clientY;
-
-                    const deltaX = currentX - this.lastX;
-                    const deltaY = currentY - this.lastY;
-
-                    // Get current rotation
-                    const currentRotation = this.el.getAttribute('rotation');
-                    
-                    // Rotate based on horizontal movement (Y-axis rotation)
-                    const rotationY = currentRotation.y + (deltaX * this.rotationSpeed);
-
-                    // Rotate based on vertical movement (X-axis rotation)
-                    const rotationX = currentRotation.x - (deltaY * this.rotationSpeed);
-
-                    this.el.setAttribute('rotation', {
-                        x: rotationX,
-                        y: rotationY,
-                        z: currentRotation.z
+                    this.markerEl.addEventListener('markerLost', () => {
+                        this.markerVisible = false;
                     });
+                }
+            },
+            tick: function () {
+                if (!this.markerVisible) {
+                    return;
+                }
 
-                    this.lastX = currentX;
-                    this.lastY = currentY;
-                });
+                if (!this.markerEl) {
+                    return;
+                }
 
-                this.el.addEventListener('mouseup', () => {
-                    this.isDragging = false;
-                    this.el.setAttribute('color', this.originalColor);
-                });
+                const sourceObj = (this.anchorEl && this.anchorEl.object3D)
+                    ? this.anchorEl.object3D
+                    : this.markerEl.object3D;
+                const followerObj = this.el.object3D;
 
-                this.el.addEventListener('mouseleave', () => {
-                    this.isDragging = false;
-                    this.el.setAttribute('color', this.originalColor);
-                });
+                if (!sourceObj || !followerObj) {
+                    return;
+                }
+
+                this.tmpMatrix.copy(sourceObj.matrixWorld);
+                followerObj.position.setFromMatrixPosition(this.tmpMatrix);
+                followerObj.quaternion.setFromRotationMatrix(this.tmpMatrix);
+                followerObj.scale.setFromMatrixScale(this.tmpMatrix);
             }
         });
 
@@ -162,14 +110,6 @@
                     loadingIndicator.setAttribute('visible', 'false');
                 }
             }, 10000);
-
-            // Hide instructions after 5 seconds
-            setTimeout(function() {
-                var instructions = document.querySelector('[position="0 -1 -2"]');
-                if (instructions) {
-                    instructions.setAttribute('visible', 'false');
-                }
-            }, 5000);
         });
     </script>
 </head>
@@ -187,15 +127,23 @@
             <a-plane color="black" width="3" height="0.5" position="0 0 0"></a-plane>
         </a-entity>
 
-        <!-- Touch instructions -->
+        <!-- Informational text -->
         <a-entity position="0 -1 -2">
-            <a-text value="Touch and drag the red cube to rotate!" align="center" color="white" position="0 0 0.1" width="6"></a-text>
-            <a-plane color="black" width="7" height="0.8" position="0 0 0"></a-plane>
+            <a-text value="Cube rotates automatically" align="center" color="white" position="0 0 0.1" width="6"></a-text>
+            <a-plane color="black" width="5" height="0.6" position="0 0 0"></a-plane>
         </a-entity>
-        <!-- Use a basic marker -->
-        <a-marker preset="hiro">
-            <!-- Simple box to verify marker detection -->
-            <a-box position="0 0.5 0" color="red" touch-rotate></a-box>
+
+        <!-- Marker anchor -->
+        <a-marker id="hiroMarker" preset="hiro">
+            <a-entity id="markerAnchor"></a-entity>
+        </a-marker>
+
+        <!-- Follower content -->
+        <a-entity id="markerContent" visible="false"
+                  marker-follow="markerId: hiroMarker; anchorId: markerAnchor">
+            <!-- Continuously rotating cube -->
+            <a-box position="0 0.5 0" color="red" auto-rotate="speed: 30"></a-box>
+
             <!-- 3D model with visual placeholder while loading -->
             <a-entity 
                 position="0 1 0"
@@ -206,7 +154,8 @@
                 <!-- Placeholder while model loads -->
                 <a-box position="0 0 0" color="#777777" width="1" height="0.1" depth="1" visible="true"></a-box>
             </a-entity>
-        </a-marker>
+        </a-entity>
+
         <a-entity camera></a-entity>
     </a-scene>
 </body>
