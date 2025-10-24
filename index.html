@@ -225,33 +225,21 @@
             </a-entity>
             
             <!-- 3D Information buttons -->
-            <a-entity position="0 0.3 0.3">
-                <!-- English button - 3D box -->
-                <a-entity position="-0.25 0 0" 
-                          animation="property: position; to: -0.25 0.03 0; dir: alternate; dur: 1000; loop: true; easing: easeInOutQuad">
-                    <a-box color="#1a73e8" width="0.3" height="0.1" depth="0.1" 
-                           material="shader: standard; metalness: 0.5; roughness: 0.2"
-                           link-handler="url: more-info-en.html; title: More Information"
-                           class="clickable"
-                           animation__mouseenter="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 300"
-                           animation__mouseleave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 300">
-                        <a-text value="MORE" align="center" color="white" position="0 0 0.051" width="1.0" wrap-count="8"></a-text>
-                    </a-box>
-                </a-entity>
-                
-                <!-- Swedish button - 3D box -->
-                <a-entity position="0.25 0 0"
-                          animation="property: position; to: 0.25 0.03 0; dir: alternate; dur: 1000; loop: true; easing: easeInOutQuad; delay: 500">
-                    <a-box color="#1a73e8" width="0.3" height="0.1" depth="0.1" 
-                           material="shader: standard; metalness: 0.5; roughness: 0.2"
-                           link-handler="url: mer-info-sv.html; title: Mer Information"
-                           class="clickable"
-                           animation__mouseenter="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 300"
-                           animation__mouseleave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 300">
-                        <a-text value="MER" align="center" color="white" position="0 0 0.051" width="1.0" wrap-count="8"></a-text>
-                    </a-box>
-                </a-entity>
-            </a-entity>
+            <!-- English button - 3D box -->
+            <a-box position="-0.35 0.25 0" color="blue" width="0.3" height="0.15" depth="0.15"
+                   link-handler="url: more-info-en.html; title: More Information"
+                   class="clickable"
+                   shadow="cast: true; receive: true">
+            </a-box>
+            <a-text value="MORE" align="center" color="white" position="-0.35 0.25 0.08" width="1.2"></a-text>
+            
+            <!-- Swedish button - 3D box -->
+            <a-box position="0.35 0.25 0" color="blue" width="0.3" height="0.15" depth="0.15"
+                   link-handler="url: mer-info-sv.html; title: Mer Information"
+                   class="clickable"
+                   shadow="cast: true; receive: true">
+            </a-box>
+            <a-text value="MER" align="center" color="white" position="0.35 0.25 0.08" width="1.2"></a-text>
         </a-entity>
 
         <a-entity camera>
