@@ -15,7 +15,7 @@
                 this.lastX = 0;
                 this.lastY = 0;
                 this.rotationSpeed = 0.5;
-                this.originalColor = this.el.getAttribute('color');
+                this.originalColor = this.el.getAttribute('color') || 'red';
 
                 // Touch start event
                 this.el.addEventListener('touchstart', (e) => {
@@ -25,6 +25,9 @@
 
                     // Visual feedback - change color when touched
                     this.el.setAttribute('color', '#ff4444');
+                    
+                    // Prevent default to avoid scrolling
+                    e.preventDefault();
                 });
 
                 // Touch move event
@@ -39,16 +42,19 @@
                     const deltaX = currentX - this.lastX;
                     const deltaY = currentY - this.lastY;
 
+                    // Get current rotation
+                    const currentRotation = this.el.getAttribute('rotation');
+                    
                     // Rotate based on horizontal movement (Y-axis rotation)
-                    const rotationY = this.el.getAttribute('rotation').y + (deltaX * this.rotationSpeed);
+                    const rotationY = currentRotation.y + (deltaX * this.rotationSpeed);
 
                     // Rotate based on vertical movement (X-axis rotation)
-                    const rotationX = this.el.getAttribute('rotation').x - (deltaY * this.rotationSpeed);
+                    const rotationX = currentRotation.x - (deltaY * this.rotationSpeed);
 
                     this.el.setAttribute('rotation', {
                         x: rotationX,
                         y: rotationY,
-                        z: this.el.getAttribute('rotation').z
+                        z: currentRotation.z
                     });
 
                     this.lastX = currentX;
@@ -59,6 +65,55 @@
                 this.el.addEventListener('touchend', () => {
                     this.isDragging = false;
                     // Reset color when touch ends
+                    this.el.setAttribute('color', this.originalColor);
+                });
+                
+                // Mouse events for desktop testing
+                this.el.addEventListener('mousedown', (e) => {
+                    this.isDragging = true;
+                    this.lastX = e.clientX;
+                    this.lastY = e.clientY;
+                    this.el.setAttribute('color', '#ff4444');
+                    e.preventDefault();
+                });
+
+                this.el.addEventListener('mousemove', (e) => {
+                    if (!this.isDragging) return;
+
+                    e.preventDefault();
+
+                    const currentX = e.clientX;
+                    const currentY = e.clientY;
+
+                    const deltaX = currentX - this.lastX;
+                    const deltaY = currentY - this.lastY;
+
+                    // Get current rotation
+                    const currentRotation = this.el.getAttribute('rotation');
+                    
+                    // Rotate based on horizontal movement (Y-axis rotation)
+                    const rotationY = currentRotation.y + (deltaX * this.rotationSpeed);
+
+                    // Rotate based on vertical movement (X-axis rotation)
+                    const rotationX = currentRotation.x - (deltaY * this.rotationSpeed);
+
+                    this.el.setAttribute('rotation', {
+                        x: rotationX,
+                        y: rotationY,
+                        z: currentRotation.z
+                    });
+
+                    this.lastX = currentX;
+                    this.lastY = currentY;
+                });
+
+                this.el.addEventListener('mouseup', () => {
+                    this.isDragging = false;
+                    this.el.setAttribute('color', this.originalColor);
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    this.isDragging = false;
                     this.el.setAttribute('color', this.originalColor);
                 });
             }
