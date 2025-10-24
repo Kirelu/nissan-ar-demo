@@ -15,7 +15,7 @@
             },
             tick: function (_time, delta) {
                 const rotation = this.el.getAttribute('rotation');
-                rotation.x += (delta / 1000) * this.data.speed;
+                rotation.z += (delta / 1000) * this.data.speed;
                 this.el.setAttribute('rotation', rotation);
             }
         });
