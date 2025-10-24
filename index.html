@@ -16,7 +16,7 @@
             },
             tick: function (_time, delta) {
                 const rotation = this.el.getAttribute('rotation');
-                rotation.y += (delta / 1000) * this.data.speed;
+                rotation.z += (delta / 1000) * this.data.speed;
                 this.el.setAttribute('rotation', rotation);
             }
         });
@@ -221,10 +221,10 @@
             </a-entity>
             
             <!-- Information buttons -->
-            <a-entity position="0 0 -0.5">
+            <a-entity position="0 -0.7 0">
                 <!-- English button -->
                 <a-entity position="-0.5 0 0">
-                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" 
+                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" rotation="-90 0 0"
                              link-handler="url: more-info-en.html; title: More Information"
                              class="clickable">
                         <a-text value="More" align="center" color="white" position="0 0 0.001" width="2"></a-text>
@@ -233,7 +233,7 @@
                 
                 <!-- Swedish button -->
                 <a-entity position="0.5 0 0">
-                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" 
+                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" rotation="-90 0 0"
                              link-handler="url: mer-info-sv.html; title: Mer Information"
                              class="clickable">
                         <a-text value="Mer" align="center" color="white" position="0 0 0.001" width="2"></a-text>
