@@ -225,24 +225,24 @@
             </a-entity>
             
             <!-- Information buttons -->
-            <a-entity position="0 0.2 0.5">
+            <a-entity position="0 -0.5 0">
                 <!-- English button -->
                 <a-entity position="-0.5 0 0">
-                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" 
+                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" rotation="0 0 90"
                              material="shader: flat; side: double; transparent: true; opacity: 0.9"
                              link-handler="url: more-info-en.html; title: More Information"
                              class="clickable">
-                        <a-text value="More" align="center" color="white" position="0 0 0.001" width="2"></a-text>
+                        <a-text value="More" align="center" color="white" position="0 0 0.001" width="2" rotation="0 0 -90"></a-text>
                     </a-plane>
                 </a-entity>
                 
                 <!-- Swedish button -->
                 <a-entity position="0.5 0 0">
-                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" 
+                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" rotation="0 0 90"
                              material="shader: flat; side: double; transparent: true; opacity: 0.9"
                              link-handler="url: mer-info-sv.html; title: Mer Information"
                              class="clickable">
-                        <a-text value="Mer" align="center" color="white" position="0 0 0.001" width="2"></a-text>
+                        <a-text value="Mer" align="center" color="white" position="0 0 0.001" width="2" rotation="0 0 -90"></a-text>
                     </a-plane>
                 </a-entity>
             </a-entity>
