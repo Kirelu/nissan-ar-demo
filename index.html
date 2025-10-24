@@ -13,27 +13,73 @@
             init: function () {
                 this.el.addEventListener('model-loaded', () => {
                     console.log('Model loaded successfully');
+                    // Hide loading indicator
+                    var loadingIndicator = document.getElementById('loadingIndicator');
+                    if (loadingIndicator) {
+                        loadingIndicator.setAttribute('visible', 'false');
+                    }
                 });
                 this.el.addEventListener('model-error', (error) => {
                     console.error('Error loading model:', error);
                 });
             }
         });
+        
+        // Handle asset loading events
+        document.addEventListener('DOMContentLoaded', function() {
+            var scene = document.querySelector('a-scene');
+            if (scene) {
+                scene.addEventListener('loaded', function() {
+                    console.log('Scene loaded');
+                });
+            }
+            
+            var model = document.querySelector('#nissan-model');
+            if (model) {
+                model.addEventListener('loaded', function() {
+                    console.log('Nissan model asset loaded');
+                });
+                model.addEventListener('error', function(e) {
+                    console.error('Error loading Nissan model asset:', e);
+                });
+            }
+            
+            // Hide loading indicator after 10 seconds regardless
+            setTimeout(function() {
+                var loadingIndicator = document.getElementById('loadingIndicator');
+                if (loadingIndicator) {
+                    loadingIndicator.setAttribute('visible', 'false');
+                }
+            }, 10000);
+        });
     </script>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded vr-mode-ui="enabled: false" arjs="debugUIEnabled: false; sourceType: webcam; trackingMethod: best;">
+        <!-- Preload assets -->
+        <a-assets>
+            <a-asset-item id="nissan-model" src="./nissan_skyline_r34_gtr_2002__www.vecarz.com/scene.gltf" crossorigin="anonymous" response-type="arraybuffer"></a-asset-item>
+        </a-assets>
+        
+        <!-- Loading indicator -->
+        <a-entity id="loadingIndicator" position="0 0 -2">
+            <a-text value="Loading model..." align="center" color="white" position="0 0 0.1"></a-text>
+            <!-- Background for text -->
+            <a-plane color="black" width="3" height="0.5" position="0 0 0"></a-plane>
+        </a-entity>
         <!-- Use a basic marker -->
         <a-marker preset="hiro">
             <!-- Simple box to verify marker detection -->
             <a-box position="0 0.5 0" color="red"></a-box>
-            <!-- 3D model with absolute path-->
+            <!-- 3D model with visual placeholder while loading -->
             <a-entity 
                 position="0 1 0"
                 scale="0.001 0.001 0.001"
                 rotation="-90 0 0"
-                gltf-model="nissan_skyline_r34_gtr_2002__www.vecarz.com/scene.gltf"
+                gltf-model="#nissan-model"
                 model-loaded>
+                <!-- Placeholder while model loads -->
+                <a-box position="0 0 0" color="#777777" width="1" height="0.1" depth="1" visible="true"></a-box>
             </a-entity>
         </a-marker>
         <a-entity camera></a-entity>
