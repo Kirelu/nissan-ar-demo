@@ -11,11 +11,11 @@
         // Continuous rotation component
         AFRAME.registerComponent('auto-rotate', {
             schema: {
-                speed: { type: 'number', default: 45 }
+                speed: { type: 'number', default: 30 }
             },
             tick: function (_time, delta) {
                 const rotation = this.el.getAttribute('rotation');
-                rotation.y += (delta / 1000) * this.data.speed;
+                rotation.x += (delta / 1000) * this.data.speed;
                 this.el.setAttribute('rotation', rotation);
             }
         });
