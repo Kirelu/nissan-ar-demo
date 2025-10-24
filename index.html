@@ -7,6 +7,7 @@
     <!-- We import ARjs library -->
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
     <script>
         // Continuous rotation component
         AFRAME.registerComponent('auto-rotate', {
@@ -113,6 +114,30 @@
             }
         });
         
+        // Custom link handler for AR environment
+        AFRAME.registerComponent('link-handler', {
+            schema: {
+                url: {type: 'string'},
+                title: {type: 'string', default: 'Link'}
+            },
+            init: function() {
+                var data = this.data;
+                var el = this.el;
+                
+                // Add click event listener
+                el.addEventListener('click', function() {
+                    console.log('Link clicked: ' + data.title);
+                    window.location.href = data.url;
+                });
+                
+                // Add touch event listener for mobile
+                el.addEventListener('touchend', function() {
+                    console.log('Link touched: ' + data.title);
+                    window.location.href = data.url;
+                });
+            }
+        });
+        
         // Handle asset loading events
         document.addEventListener('DOMContentLoaded', function() {
             var scene = document.querySelector('a-scene');
@@ -194,9 +219,36 @@
                 <!-- Placeholder while model loads -->
                 <a-box position="0 0 0" color="#777777" width="1" height="0.1" depth="1" visible="true"></a-box>
             </a-entity>
+            
+            <!-- Information buttons -->
+            <a-entity position="0 0 -0.5">
+                <!-- English button -->
+                <a-entity position="-0.5 0 0">
+                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" 
+                             link-handler="url: more-info-en.html; title: More Information"
+                             class="clickable">
+                        <a-text value="More" align="center" color="white" position="0 0 0.001" width="2"></a-text>
+                    </a-plane>
+                </a-entity>
+                
+                <!-- Swedish button -->
+                <a-entity position="0.5 0 0">
+                    <a-plane color="#1a73e8" width="0.8" height="0.3" position="0 0 0" 
+                             link-handler="url: mer-info-sv.html; title: Mer Information"
+                             class="clickable">
+                        <a-text value="Mer" align="center" color="white" position="0 0 0.001" width="2"></a-text>
+                    </a-plane>
+                </a-entity>
+            </a-entity>
         </a-entity>
 
-        <a-entity camera></a-entity>
+        <a-entity camera>
+            <a-entity cursor="fuse: true; fuseTimeout: 500"
+                      position="0 0 -1"
+                      geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                      material="color: white; shader: flat"
+                      raycaster="objects: .clickable"></a-entity>
+        </a-entity>
     </a-scene>
 </body>
 </html>
