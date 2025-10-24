@@ -198,10 +198,13 @@
         <a-entity id="markerContent" visible="false"
                   marker-follow="markerId: hiroMarker; anchorId: markerAnchor">
             <!-- Directional light for shadows -->
-            <a-light type="directional" position="1 2 1" intensity="0.6" castShadow="true" shadow="mapSize: 1024x1024; far: 10;"></a-light>
+            <a-light type="directional" position="1 2 1" intensity="0.8" castShadow="true" shadow="mapSize: 1024x1024; far: 10;"></a-light>
+            
+            <!-- Additional directional light from opposite side -->
+            <a-light type="directional" position="-1 1 1" intensity="0.6" castShadow="false"></a-light>
             
             <!-- Ambient light to prevent complete darkness -->
-            <a-light type="ambient" intensity="0.3"></a-light>
+            <a-light type="ambient" intensity="0.5"></a-light>
             
             <!-- Shadow receiving ground plane -->
             <a-plane position="0 0 0" rotation="-90 0 0" width="3" height="3" shadow-plane></a-plane>
@@ -247,10 +250,12 @@
             <a-entity cursor="fuse: true; fuseTimeout: 1500"
                       position="0 0 -1"
                       geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                      material="color: white; shader: flat"
+                      material="color: white; shader: flat; opacity: 0.0"
                       animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
                       animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.5 0.5 0.5"
                       animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1"
+                      animation__fusing_opacity="property: material.opacity; startEvents: fusing; easing: easeInCubic; dur: 300; from: 0.0; to: 0.8"
+                      animation__mouseleave_opacity="property: material.opacity; startEvents: mouseleave; easing: easeInCubic; dur: 300; to: 0.0"
                       raycaster="objects: .clickable; far: 20"></a-entity>
         </a-entity>
     </a-scene>
